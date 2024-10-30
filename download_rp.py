@@ -17,7 +17,7 @@ if __name__ == '__main__':
     search = Search(
         query='all', 
         max_results=total_papers, 
-        sort_by = SortCriterion.Relevance
+        sort_by = SortCriterion.SubmittedDate
     )
 
     for paper in tqdm(client.results(search), total=total_papers):
