@@ -1,6 +1,6 @@
 import os
 
-from arxiv import Client, Search, SortCriterion
+from arxiv import Client, Search, SortCriterion, SortOrder
 from pathlib import Path
 from tqdm import tqdm
 from utils.clear_download_cache import cleanup
@@ -19,7 +19,8 @@ if __name__ == '__main__':
     search = Search(
         query='all', 
         max_results=total_papers, 
-        sort_by = SortCriterion.SubmittedDate
+        sort_by = SortCriterion.SubmittedDate,
+        sort_order = SortOrder.Descending
     )
 
     for paper in tqdm(client.results(search), total=total_papers):
