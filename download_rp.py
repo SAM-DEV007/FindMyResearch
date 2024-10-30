@@ -3,7 +3,7 @@ import os
 from arxiv import Client, Search, SortCriterion, SortOrder
 from pathlib import Path
 from tqdm import tqdm
-from utils.clear_download_cache import cleanup
+from utils.download_paper import cleanup, verify_files
 
 if __name__ == '__main__':
     curr_dir = Path(__file__).resolve().parent
@@ -25,4 +25,6 @@ if __name__ == '__main__':
 
     for paper in tqdm(client.results(search), total=total_papers):
         paper.download_pdf(dirpath=download_dir)
+
     cleanup()
+    verify_files(download_dir)
