@@ -13,16 +13,15 @@ from transformers import pipeline
 from datetime import datetime
 from pypdf import PdfReader
 
-metadata = {}
-
-paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
-
 
 def generate_metadata_main():
     pass
 
 
 def generate_metadata_doi():
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
+
+    metadata = {}
     results = pdf2doi.pdf2doi(paper_dir)
 
     for i in len(results):
@@ -34,6 +33,8 @@ def generate_metadata_doi():
         metadata[data['DOI']]['date'] = data['issues']['date-parts'][0][0]
         metadata[data['DOI']]['publisher'] = data['publisher']
         metadata[data['DOI']]['abstract'] = data['abstract']
+    
+    return metadata
 
 
 def generate_metadata_manual():
@@ -66,3 +67,5 @@ def load_metadata():
 
     with open(f'{cache_dir}/metadata.json', 'rb') as f:
         metadata = json.load(f)
+    
+    return metadata
