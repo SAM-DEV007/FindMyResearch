@@ -70,6 +70,8 @@ def generate_metadata_manual(metadata: dict):
 
         if not title:
             title = _title
+            if title in metadata:
+                continue
         if not author:
             author = _author
         if not date:
