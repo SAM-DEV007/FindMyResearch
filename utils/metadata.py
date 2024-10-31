@@ -27,12 +27,13 @@ def generate_metadata_doi():
     for i in len(results):
         data = json.loads(results[i]['validation_info'])
 
-        metadata[data['DOI']]['title'] = data['title']
-        metadata[data['DOI']]['author'] = get_author(data['author'])
-        metadata[data['DOI']]['keywords'] = ','.join(data['categories'])
-        metadata[data['DOI']]['date'] = data['issues']['date-parts'][0][0]
-        metadata[data['DOI']]['publisher'] = data['publisher']
-        metadata[data['DOI']]['abstract'] = data['abstract']
+        metadata[data['title']]['title'] = data['title']
+        metadata[data['title']]['author'] = get_author(data['author'])
+        metadata[data['title']]['keywords'] = ','.join(data['categories'])
+        metadata[data['title']]['date'] = data['issues']['date-parts'][0][0]
+        metadata[data['title']]['publisher'] = data['publisher']
+        metadata[data['title']]['abstract'] = data['abstract']
+        metadata[data['title']]['doi'] = data['DOI']
     
     return metadata
 
