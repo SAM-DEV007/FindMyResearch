@@ -13,19 +13,22 @@ from transformers import pipeline
 from datetime import datetime
 from pypdf import PdfReader
 
+from datetime import datetime
+
 
 def generate_metadata_main():
     pass
 
 
-def generate_metadata_doi():
+def generate_metadata_doi(metadata: dict):
     paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
-
-    metadata = {}
     results = pdf2doi.pdf2doi(paper_dir)
 
     for i in len(results):
         data = json.loads(results[i]['validation_info'])
+
+        if not data or not data['title']:
+            continue
 
         metadata[data['title']]['title'] = data['title']
         metadata[data['title']]['author'] = get_author(data['author'])
@@ -38,12 +41,52 @@ def generate_metadata_doi():
     return metadata
 
 
-def generate_metadata_manual():
-    pass
+def generate_metadata_manual(metadata: dict):
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
+
+    for pdf in os.listdir(paper_dir):
+        doc = fitz.open(f'{paper_dir}/{pdf}')
+        page = doc[0]
+        blocks = page.get_text("blocks")
+
+        text_list = [block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', ' ') for block in blocks]
+
+        idx = get_idx(text_list)
+
+        title = text_list[idx]
+        author = text_list[idx+1]
+
+        if not metadata[title]:
+            continue
+
+        metadata[title]['title'] = title
+        metadata[title]['author'] = author
+    
+    return metadata
 
 
-def generate_metadata_ai():
-    pass
+def generate_metadata_ai(metadata, text_list):
+    model_checkpoint = "deepset/roberta-base-squad2"
+    question_answerer = pipeline("question-answering", model=model_checkpoint)
+
+    context = '. '.join(text_list)
+
+    question = "What are the keywords?"
+    keyword = question_answerer(question=question, context=context, handle_impossible_answer=True)
+
+    question = "What is the date?"
+    date = question_answerer(question=question, context=context, handle_impossible_answer=False)
+
+    for s in context[keyword['end']:]:
+        if s == '.':
+            break
+        keyword['answer'] += s
+    if keyword['start'] in range(50):
+        keyword['answer'] = ''
+    
+    date['answer'] = datetime.strptime(date['answer'], "%d %b %Y").strftime('%d-%m-%Y')
+
+    return keyword['answer'], date['answer']
 
 
 def generate_metadata_pdf():
@@ -52,6 +95,10 @@ def generate_metadata_pdf():
 
 def get_author(data: list):
     return ','.join([i['given'] + ' ' + i['family'] for i in data])
+
+
+def get_idx(text_list):
+    return int(bool(re.search(r'\d', text_list[0])))
 
 
 def save_metadata():
