@@ -24,10 +24,13 @@ def generate_metadata_doi(metadata: dict):
     paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
     results = pdf2doi.pdf2doi(paper_dir)
 
+    force = False
+
     for i in len(results):
         data = json.loads(results[i]['validation_info'])
 
         if not data or not data['title']:
+            force = True
             continue
 
         metadata[data['title']]['title'] = data['title']
@@ -38,7 +41,7 @@ def generate_metadata_doi(metadata: dict):
         metadata[data['title']]['abstract'] = data['abstract']
         metadata[data['title']]['doi'] = data['DOI']
     
-    return metadata
+    return metadata, force
 
 
 def generate_metadata_manual(metadata: dict):
@@ -56,16 +59,30 @@ def generate_metadata_manual(metadata: dict):
         title = text_list[idx]
         author = text_list[idx+1]
 
-        if not metadata[title]:
-            continue
+        keyword, date = generate_metadata_ai(text_list)
+        _title, _author, _date = generate_metadata_pdf(paper_dir, pdf)
 
+        if not title:
+            title = _title
+        if not author:
+            author = _author
+        if not date:
+            date = _date
+            
         metadata[title]['title'] = title
         metadata[title]['author'] = author
+        metadata[title]['date'] = date
+
+        metadata[title]['keywords'] = keyword
+
+        metadata[title]['publisher'] = ''
+        metadata[title]['abstract'] = ''
+        metadata[title]['doi'] = ''
     
     return metadata
 
 
-def generate_metadata_ai(metadata, text_list):
+def generate_metadata_ai(text_list):
     model_checkpoint = "deepset/roberta-base-squad2"
     question_answerer = pipeline("question-answering", model=model_checkpoint)
 
@@ -89,8 +106,11 @@ def generate_metadata_ai(metadata, text_list):
     return keyword['answer'], date['answer']
 
 
-def generate_metadata_pdf():
-    pass
+def generate_metadata_pdf(paper_dir: str, pdf: str):
+    reader = PdfReader(f'{paper_dir}/{pdf}')
+    metadata = reader.metadata
+
+    return metadata.title, metadata.author, metadata.creation_date.strftime('%d-%m-%Y')
 
 
 def get_author(data: list):
