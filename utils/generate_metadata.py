@@ -33,19 +33,23 @@ def generate_metadata_doi(metadata: dict):
     force = False
 
     for i in len(results):
+        pdf = results[i]['path'].split('\\')[-1]
         data = json.loads(results[i]['validation_info'])
 
-        if not data or not data['title']:
+        if pdf in metadata:
+            continue
+
+        if not data:
             force = True
             continue
 
-        metadata[data['title']]['title'] = data['title']
-        metadata[data['title']]['author'] = get_author(data['author'])
-        metadata[data['title']]['keywords'] = ','.join(data['categories'])
-        metadata[data['title']]['date'] = data['issues']['date-parts'][0][0]
-        metadata[data['title']]['publisher'] = data['publisher']
-        metadata[data['title']]['abstract'] = data['abstract']
-        metadata[data['title']]['doi'] = data['DOI']
+        metadata[pdf]['title'] = data['title']
+        metadata[pdf]['author'] = get_author(data['author'])
+        metadata[pdf]['keywords'] = ','.join(data['categories'])
+        metadata[pdf]['date'] = data['issues']['date-parts'][0][0]
+        metadata[pdf]['publisher'] = data['publisher']
+        metadata[pdf]['abstract'] = data['abstract']
+        metadata[pdf]['doi'] = data['DOI']
     
     return metadata, force
 
@@ -54,6 +58,9 @@ def generate_metadata_manual(metadata: dict):
     paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
 
     for pdf in os.listdir(paper_dir):
+        if pdf in metadata:
+            continue
+
         doc = fitz.open(f'{paper_dir}/{pdf}')
         page = doc[0]
         blocks = page.get_text("blocks")
@@ -70,22 +77,20 @@ def generate_metadata_manual(metadata: dict):
 
         if not title:
             title = _title
-            if title in metadata:
-                continue
         if not author:
             author = _author
         if not date:
             date = _date
             
-        metadata[title]['title'] = title
-        metadata[title]['author'] = author
-        metadata[title]['date'] = date
+        metadata[pdf]['title'] = title
+        metadata[pdf]['author'] = author
+        metadata[pdf]['date'] = date
 
-        metadata[title]['keywords'] = keyword
+        metadata[pdf]['keywords'] = keyword
 
-        metadata[title]['publisher'] = ''
-        metadata[title]['abstract'] = ''
-        metadata[title]['doi'] = ''
+        metadata[pdf]['publisher'] = ''
+        metadata[pdf]['abstract'] = ''
+        metadata[pdf]['doi'] = ''
     
     return metadata
 
