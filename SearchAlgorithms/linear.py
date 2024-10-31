@@ -1,8 +1,5 @@
-def word_search(word: str, pages: list):
-    return any(word in page for page in pages)
+def page_search(search: str, pages: list):
+    return bool(re.search(search, '\n'.join((page.get_text("text") for page in pages))))
 
-def sentence_search(sentence: str, pages: list):
-    return any(sentence in page for page in pages)
-
-def keyword_search(keyword: str, pdf_metadata: dict):
-    return any(keyword in value for value in pdf_metadata['keywords'])
+def metadata_search(keyword: str, metadata: dict, search_type: str):
+    return bool(re.search(keyword, metadata[search_type]))
