@@ -17,7 +17,13 @@ from datetime import datetime
 
 
 def generate_metadata_main():
-    pass
+    metadata = {}
+
+    metadata, force = generate_metadata_doi(metadata)
+    if force:
+        metadata = generate_metadata_manual(metadata)
+    
+    save_metadata(metadata)
 
 
 def generate_metadata_doi(metadata: dict):
@@ -121,7 +127,7 @@ def get_idx(text_list):
     return int(bool(re.search(r'\d', text_list[0])))
 
 
-def save_metadata():
+def save_metadata(metadata: dict):
     cache_dir = str(Path(__file__).resolve().parent.parent / '.cache/metadata_rp')
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
