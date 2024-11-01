@@ -21,22 +21,67 @@ from datetime import datetime
 
 
 def check_metadata():
+    force = False
+    main_force = False
+
     cache_dir = str(Path(__file__).resolve().parent.parent / '.cache/metadata_rp')
     if not os.path.exists(f'{cache_dir}/metadata.json'):
-        return False, False
+        return False, force
 
     paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
     metadata = load_metadata()
 
+    delete_metadata = []
     for pdf in metadata:
         if not os.path.exists(f'{paper_dir}/{pdf}'):
-            return False, False
+            delete_metadata.append(pdf)
+    for pdf in delete_metadata:
+        metadata.pop(pdf)
         
     for pdf in os.listdir(paper_dir):
         if pdf not in metadata:
-            return False, False
+            metadata, force = generate_metadata_individual(metadata, pdf)
+            if force:
+                main_force = True
     
-    return metadata, False
+    return metadata, main_force
+
+
+def generate_metadata_individual(metadata: dict, pdf: str):
+    force = False
+
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
+    results = pdf2doi.pdf2doi(f'{paper_dir}/{pdf}')
+
+    try:
+        data = json.loads(results['validation_info'])
+    except:
+        data = None
+
+    if not data:
+        force = True
+        return metadata, force
+    
+    for key in ('title', 'author', 'categories', 'issued', 'publisher', 'abstract', 'DOI'):
+        if key not in data:
+            force = True
+            continue
+
+    metadata[pdf] = {}
+
+    try:
+        metadata[pdf]['title'] = data['title']
+        metadata[pdf]['author'] = get_author(data['author'])
+        metadata[pdf]['keywords'] = ','.join(data['categories'])
+        metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
+        metadata[pdf]['publisher'] = data['publisher']
+        metadata[pdf]['abstract'] = data['abstract']
+        metadata[pdf]['doi'] = data['DOI']
+    except:
+        del metadata[pdf]
+        force = True
+
+    return metadata, force
 
 
 def generate_metadata_main():
@@ -62,7 +107,11 @@ def generate_metadata_doi(metadata: dict):
 
     for i in tqdm(range(len(results))):
         pdf = results[i]['path'].split('\\')[-1]
-        data = json.loads(results[i]['validation_info'])
+
+        try:
+            data = json.loads(results[i]['validation_info'])
+        except:
+            data = None
 
         if pdf in metadata:
             continue
@@ -70,16 +119,26 @@ def generate_metadata_doi(metadata: dict):
         if not data:
             force = True
             continue
+        
+        for key in ('title', 'author', 'categories', 'issued', 'publisher', 'abstract', 'DOI'):
+            if key not in data:
+                force = True
+                continue
 
         metadata[pdf] = {}
 
-        metadata[pdf]['title'] = data['title']
-        metadata[pdf]['author'] = get_author(data['author'])
-        metadata[pdf]['keywords'] = ','.join(data['categories'])
-        metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
-        metadata[pdf]['publisher'] = data['publisher']
-        metadata[pdf]['abstract'] = data['abstract']
-        metadata[pdf]['doi'] = data['DOI']
+        try:
+            metadata[pdf]['title'] = data['title']
+            metadata[pdf]['author'] = get_author(data['author'])
+            metadata[pdf]['keywords'] = ','.join(data['categories'])
+            metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
+            metadata[pdf]['publisher'] = data['publisher']
+            metadata[pdf]['abstract'] = data['abstract']
+            metadata[pdf]['doi'] = data['DOI']
+        except:
+            del metadata[pdf]
+            force = True
+            continue
     
     return metadata, force
 
