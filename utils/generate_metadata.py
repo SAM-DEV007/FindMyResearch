@@ -20,12 +20,36 @@ from tqdm import tqdm
 from datetime import datetime
 
 
-def generate_metadata_main():
-    metadata = {}
+def check_metadata():
+    cache_dir = str(Path(__file__).resolve().parent.parent / '.cache/metadata_rp')
+    if not os.path.exists(f'{cache_dir}/metadata.json'):
+        return False, False
 
-    metadata, force = generate_metadata_doi(metadata)
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
+    metadata = load_metadata()
+
+    for pdf in metadata:
+        if not os.path.exists(f'{paper_dir}/{pdf}'):
+            return False, False
+        
+    for pdf in os.listdir(paper_dir):
+        if pdf not in metadata:
+            return False, False
+    
+    return metadata, False
+
+
+def generate_metadata_main():
+    print('Main technique for metadata generation')
+    metadata, force = check_metadata()
+    if not metadata:
+        print('Checks failed, regenerating metadata')
+        metadata = {}
+        metadata, force = generate_metadata_doi(metadata)
     if force:
+        print('Backup technique for metadata generation')
         metadata = generate_metadata_manual(metadata)
+    print('Metadata generation complete')
     
     save_metadata(metadata)
 
