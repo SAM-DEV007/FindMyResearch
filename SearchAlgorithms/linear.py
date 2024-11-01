@@ -1,5 +1,8 @@
-def page_search(search: str, pages: list):
-    return bool(re.search(search, '\n'.join((page.get_text("text") for page in pages))))
+import re
 
-def metadata_search(keyword: str, metadata: dict, search_type: str):
-    return bool(re.search(keyword, metadata[search_type]))
+
+def pdf_search(search: str, context: str):
+    return bool(re.search(search, context, flags=re.IGNORECASE))
+
+def metadata_search(keyword: str, sub_metadata: dict, search_type: str):
+    return bool(re.search(keyword, sub_metadata[search_type], flags=re.IGNORECASE))
