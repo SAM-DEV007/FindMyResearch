@@ -22,7 +22,7 @@ def generate_context():
     
     changes = False
 
-    paper_dir = Path(__file__).resolve().parent / 'TestPapers'
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
     for pdf in tqdm(os.listdir(paper_dir)):
         if pdf in main_context:
             continue

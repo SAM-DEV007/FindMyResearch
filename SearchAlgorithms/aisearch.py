@@ -22,7 +22,7 @@ import pickle as pkl
 def load_pdf():
     global embedder
 
-    paper_dir = Path(__file__).resolve().parent.parent / 'Papers'
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
 
     changes = False
 
@@ -51,7 +51,7 @@ def load_pdf():
 
 
 def load_images():
-    paper_dir = Path(__file__).resolve().parent.parent / 'Papers'
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
 
     main_images = load_file('semantic_image.dat')
     if not main_images:
