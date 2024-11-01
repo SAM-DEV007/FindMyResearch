@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer, util
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 import fitz
+import pickle as pkl
 
 
 def load_pdf():
@@ -15,8 +16,18 @@ def load_pdf():
 
     paper_dir = Path(__file__).resolve().parent.parent / 'Papers'
 
-    corpus = {}
-    for pdf in os.listdir(paper_dir):
+    corpus = load_file()
+    if not corpus:
+        corpus = {}
+    
+    changes = False
+
+    for pdf in tqdm(os.listdir(paper_dir)):
+        if pdf in corpus:
+            continue
+            
+        changes = True
+
         doc = fitz.open(f'{paper_dir}/{pdf}')
         text_list = []
         for page in doc:
@@ -25,15 +36,17 @@ def load_pdf():
             text_list.extend([block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', '') for block in blocks])
 
         context = '. '.join(text_list)
-        corpus[pdf] = context
+        corpus[pdf] = embedder.encode(context, convert_to_tensor=True)
+    
+    if changes:
+        save_file(corpus)
 
-    corpus_embeddings = embedder.encode(list(corpus.values()), convert_to_tensor=True)
-    keys = list(corpus.keys())
-    return corpus_embeddings, keys
 
-
-def semantic_search(corpus_embeddings, keys: list, query: str, num_search: int = 10):
+def semantic_search(corpus: dict, query: str, num_search: int = 10):
     global embedder
+
+    corpus_embeddings = list(corpus.values())
+    keys = list(corpus.keys())
 
     query_embedding = embedder.encode(query, convert_to_tensor=True)
 
@@ -43,3 +56,25 @@ def semantic_search(corpus_embeddings, keys: list, query: str, num_search: int =
     pdfs = {keys[hit['corpus_id']]: float(f'{hit["score"]:.4f}') for hit in hits}
     
     return pdfs
+
+
+def save_file(corpus: dict):
+    cache_location = str(Path(__file__).resolve().parent.parent / '.cache/semantic_rp')
+
+    if not os.path.exists(cache_location):
+        os.makedirs(cache_location)
+    
+    with open(f'{cache_location}/semantic.dat', 'wb') as f:
+        pkl.dump(corpus, f, protocol=pkl.HIGHEST_PROTOCOL)
+
+
+def load_file():
+    cache_location = str(Path(__file__).resolve().parent.parent / '.cache/semantic_rp')
+
+    if not os.path.exists(f'{cache_location}/semantic.dat'):
+        return False
+
+    with open(f'{cache_location}/semantic.dat', 'rb') as f:
+        corpus = pkl.load(f)
+    
+    return corpus
