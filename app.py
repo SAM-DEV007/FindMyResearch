@@ -5,7 +5,7 @@ temp_info = st.title('Loading models and cache... Please wait...')
 from utils import generate_metadata
 generate_metadata.generate_metadata_main()
 
-from SearchAlgorithms import aisearch, linear
+from SearchAlgorithms import aisearch, linear, sort_filter
 linear.generate_context()
 aisearch.load_pdf()
 aisearch.load_images()
