@@ -77,11 +77,11 @@ def generate_metadata_manual(metadata: dict):
         keyword, date = generate_metadata_ai(text_list)
         _title, _author, _date = generate_metadata_pdf(paper_dir, pdf)
 
-        if not title:
+        if not title and _title:
             title = _title
-        if not author:
+        if not author and _author:
             author = _author
-        if not date:
+        if (not date or len(date) == 4) and _date:
             date = _date
         
         metadata[pdf] = {}
@@ -118,7 +118,10 @@ def generate_metadata_ai(text_list):
     if keyword['start'] in range(50):
         keyword['answer'] = ''
     
-    date['answer'] = datetime.strptime(date['answer'], "%d %b %Y").strftime('%d-%m-%Y')
+    try:
+        date['answer'] = datetime.strptime(date['answer'], "%d %b %Y").strftime('%d-%m-%Y')
+    except ValueError:
+        date['answer'] = date['answer'][-4:]
 
     return keyword['answer'], date['answer']
 
