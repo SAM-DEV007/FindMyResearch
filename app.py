@@ -1,21 +1,32 @@
 import streamlit as st
-st.title('FindMyResearch')
-temp_info = st.title('Loading models and cache... Please wait...')
 
 from utils import generate_metadata
-generate_metadata.generate_metadata_main()
-
 from SearchAlgorithms import aisearch, linear, sort_filter
-linear.generate_context()
-aisearch.load_pdf()
-aisearch.load_images()
 
 
-metadata = generate_metadata.load_metadata()
-context = linear.load_context()
+@st.cache_resource # st.cache_resource.clear()
+def start():
+    generate_metadata.generate_metadata_main()
+    linear.generate_context()
+    aisearch.load_pdf()
+    aisearch.load_images()
 
-corpus = load_file('semantic_sentence.dat')
-main_images = load_file('semantic_image.dat')
+
+    metadata = generate_metadata.load_metadata()
+    context = linear.load_context()
+
+    corpus = aisearch.load_file('semantic_sentence.dat')
+    main_images = aisearch.load_file('semantic_image.dat')
+
+    return metadata, context, corpus, main_images
 
 
-temp_info.empty()
+st.title('FindMyResearch')
+temp_info = st.info('Loading models and cache... Please wait...')
+
+metadata, context, corpus, main_images = start()
+
+temp_info.info('Models and cache loaded! Status: Ready!')
+
+search = st.text_input('Search')
+st.write('Search Results:', search)
