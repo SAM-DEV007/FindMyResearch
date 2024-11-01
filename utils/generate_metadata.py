@@ -129,8 +129,12 @@ def generate_metadata_ai(text_list):
 def generate_metadata_pdf(paper_dir: str, pdf: str):
     reader = PdfReader(f'{paper_dir}/{pdf}')
     metadata = reader.metadata
+    date = metadata.creation_date
 
-    return metadata.title, metadata.author, metadata.creation_date.strftime('%d-%m-%Y')
+    if isinstance(date, datetime):
+        date = metadata.creation_date.strftime('%d-%m-%Y')
+
+    return metadata.title, metadata.author, date
 
 
 def get_author(data: list):
