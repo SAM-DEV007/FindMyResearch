@@ -6,7 +6,7 @@ from SearchAlgorithms import aisearch, linear, sort_filter
 
 @st.cache_resource # st.cache_resource.clear()
 def start():
-    temp_info = st.info('Loading models and cache... Please wait...')
+    temp_info = st.info('Loading and Verifying Models and Cache... Please wait...')
 
     generate_metadata.generate_metadata_main()
     linear.generate_context()
