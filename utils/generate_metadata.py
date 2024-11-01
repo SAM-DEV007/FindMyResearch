@@ -15,6 +15,7 @@ question_answerer = pipeline("question-answering", model=model_checkpoint)
 
 from datetime import datetime
 from pypdf import PdfReader
+from tqdm import tqdm
 
 from datetime import datetime
 
@@ -35,7 +36,7 @@ def generate_metadata_doi(metadata: dict):
 
     force = False
 
-    for i in range(len(results)):
+    for i in tqdm(range(len(results))):
         pdf = results[i]['path'].split('\\')[-1]
         data = json.loads(results[i]['validation_info'])
 
@@ -62,7 +63,7 @@ def generate_metadata_doi(metadata: dict):
 def generate_metadata_manual(metadata: dict):
     paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
 
-    for pdf in os.listdir(paper_dir):
+    for pdf in tqdm(os.listdir(paper_dir)):
         if pdf in metadata:
             continue
 
