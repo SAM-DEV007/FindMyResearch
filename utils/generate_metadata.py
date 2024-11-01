@@ -143,14 +143,14 @@ def save_metadata(metadata: dict):
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
 
-    with open(f'{cache_dir}/metadata.json', 'wb') as f:
+    with open(f'{cache_dir}/metadata.json', 'w') as f:
         json.dump(metadata, f)
 
 
 def load_metadata():
     cache_dir = str(Path(__file__).resolve().parent.parent / '.cache/metadata_rp')
 
-    with open(f'{cache_dir}/metadata.json', 'rb') as f:
+    with open(f'{cache_dir}/metadata.json', 'r') as f:
         metadata = json.load(f)
     
     return metadata
