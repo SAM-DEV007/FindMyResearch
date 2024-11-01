@@ -51,7 +51,7 @@ def generate_metadata_doi(metadata: dict):
         metadata[pdf]['title'] = data['title']
         metadata[pdf]['author'] = get_author(data['author'])
         metadata[pdf]['keywords'] = ','.join(data['categories'])
-        metadata[pdf]['date'] = data['issued']['date-parts'][0][0]
+        metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
         metadata[pdf]['publisher'] = data['publisher']
         metadata[pdf]['abstract'] = data['abstract']
         metadata[pdf]['doi'] = data['DOI']
