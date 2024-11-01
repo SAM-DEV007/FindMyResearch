@@ -45,6 +45,14 @@ def load_pdf():
 
         context = '. '.join(text_list)
         corpus[pdf] = embedder.encode(context, convert_to_tensor=True)
+    
+    delete_list = []
+    for pdf in corpus:
+        if not os.path.exists(f'{paper_dir}/{pdf}'):
+            changes = True
+            delete_list.append(pdf)
+    for pdf in delete_list:
+        del corpus[pdf]
 
     if changes:
         save_file(corpus, 'semantic_sentence.dat')
@@ -78,6 +86,14 @@ def load_images():
 
         embeddings = get_image_embeddings(images)
         main_images[pdf] = embeddings
+    
+    delete_list = []
+    for pdf in main_images:
+        if not os.path.exists(f'{paper_dir}/{pdf}'):
+            changes = True
+            delete_list.append(pdf)
+    for pdf in delete_list:
+        del main_images[pdf]
     
     if changes:
         save_file(main_images, 'semantic_image.dat')

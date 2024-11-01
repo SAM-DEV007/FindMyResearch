@@ -39,6 +39,14 @@ def generate_context():
         context = '. '.join(text_list)
         main_context[pdf] = context
     
+    delete_list = []
+    for pdf in main_context:
+        if not os.path.exists(f'{paper_dir}/{pdf}'):
+            changes = True
+            delete_list.append(pdf)
+    for pdf in delete_list:
+        del main_context[pdf]
+    
     if changes:
         save_context(main_context)
 
