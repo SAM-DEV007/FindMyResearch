@@ -32,7 +32,7 @@ def generate_metadata_doi(metadata: dict):
 
     force = False
 
-    for i in len(results):
+    for i in range(len(results)):
         pdf = results[i]['path'].split('\\')[-1]
         data = json.loads(results[i]['validation_info'])
 
