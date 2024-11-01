@@ -22,7 +22,7 @@ def load_pdf():
     
     changes = False
 
-    for pdf in tqdm(os.listdir(paper_dir)):
+    for pdf in os.listdir(paper_dir):
         if pdf in corpus:
             continue
             
