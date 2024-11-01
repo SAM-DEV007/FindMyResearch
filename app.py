@@ -6,6 +6,8 @@ from SearchAlgorithms import aisearch, linear, sort_filter
 
 @st.cache_resource # st.cache_resource.clear()
 def start():
+    temp_info = st.info('Loading models and cache... Please wait...')
+
     generate_metadata.generate_metadata_main()
     linear.generate_context()
     aisearch.load_pdf()
@@ -18,15 +20,14 @@ def start():
     corpus = aisearch.load_file('semantic_sentence.dat')
     main_images = aisearch.load_file('semantic_image.dat')
 
+    temp_info.empty()
+
     return metadata, context, corpus, main_images
 
 
 st.title('FindMyResearch')
-temp_info = st.info('Loading models and cache... Please wait...')
 
 metadata, context, corpus, main_images = start()
-
-temp_info.info('Models and cache loaded! Status: Ready!')
 
 search = st.text_input('Search')
 st.write('Search Results:', search)
