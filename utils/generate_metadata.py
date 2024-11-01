@@ -10,6 +10,9 @@ import os
 os.environ['HF_HOME'] = str(Path(__file__).parent.parent / '.cache')
 
 from transformers import pipeline
+model_checkpoint = "deepset/roberta-base-squad2"
+question_answerer = pipeline("question-answering", model=model_checkpoint)
+
 from datetime import datetime
 from pypdf import PdfReader
 
@@ -100,8 +103,7 @@ def generate_metadata_manual(metadata: dict):
 
 
 def generate_metadata_ai(text_list):
-    model_checkpoint = "deepset/roberta-base-squad2"
-    question_answerer = pipeline("question-answering", model=model_checkpoint)
+    global question_answerer
 
     context = '. '.join(text_list)
 
