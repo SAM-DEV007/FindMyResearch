@@ -10,14 +10,13 @@ embedder = SentenceTransformer("all-MiniLM-L6-v2")
 import fitz
 
 
-def semantic_search(query: str, num_search: int):
-    paper_dir = Path(__file__).resolve().parent.parent / 'Papers'
-    max_score = {}
+def load_pdf():
+    global embedder
 
-    query_embedding = embedder.encode(query, convert_to_tensor=True)
+    paper_dir = Path(__file__).resolve().parent.parent / 'Papers'
 
     corpus = {}
-    for pdf in tqdm(os.listdir(paper_dir)):
+    for pdf in os.listdir(paper_dir):
         doc = fitz.open(f'{paper_dir}/{pdf}')
         text_list = []
         for page in doc:
@@ -28,17 +27,19 @@ def semantic_search(query: str, num_search: int):
         context = '. '.join(text_list)
         corpus[pdf] = context
 
-    corpus_embeddings = embedder.encode(corpus, convert_to_tensor=True)
+    corpus_embeddings = embedder.encode(list(corpus.values()), convert_to_tensor=True)
+    keys = list(corpus.keys())
+    return corpus_embeddings, keys
 
-    hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=min(num_search, len(corpus)))
-    hits = hits[0][0]
 
-    for hit in hits:
-        if len(max_score) < num_search:
-            max_score[hit['score']] = pdf
-        else:
-            if hit['score'] > min(max_score.keys()):
-                max_score.pop(min(max_score.keys()))
-                max_score[hit['score']] = pdf
+def semantic_search(corpus_embeddings, keys: list, query: str, num_search: int = 10):
+    global embedder
 
-    return max_score
+    query_embedding = embedder.encode(query, convert_to_tensor=True)
+
+    hits = util.semantic_search(query_embedding, corpus_embeddings, top_k=num_search)
+    hits = hits[0]
+
+    pdfs = {keys[hit['corpus_id']]: float(f'{hit["score"]:.4f}') for hit in hits}
+    
+    return pdfs
