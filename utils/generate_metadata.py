@@ -47,6 +47,71 @@ def check_metadata():
     return metadata, main_force
 
 
+def generate(metadata: dict, pdf: str, data: dict):
+    paper_dir = str(Path(__file__).resolve().parent.parent / 'Papers')
+    force = False
+
+    metadata[pdf] = {}
+
+    try:
+        metadata[pdf]['title'] = data['title']
+        metadata[pdf]['author'] = get_author(data['author'])
+        metadata[pdf]['publisher'] = data['publisher']
+        metadata[pdf]['doi'] = data['DOI']
+
+        _, _, date = generate_metadata_pdf(paper_dir, pdf)
+        if not date:
+            date = str(data['issued']['date-parts'][0][0])
+        metadata[pdf]['date'] = date
+
+        doc = fitz.open(f'{paper_dir}/{pdf}')
+        page = doc[0]
+        blocks = page.get_text("blocks")
+
+        text_list = [block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', ' ') for block in blocks]
+
+        keywords = ''
+        if 'categories' in data:
+            keywords = ','.join(data['categories'])
+        else:
+            keywords, _, _ = generate_metadata_ai(text_list)
+            if not keywords:
+                found_keyword = False
+                for txt in text_list:
+                    if found_keyword:
+                        keywords = txt
+                        break
+                    if bool(re.search('key.?word', txt, flags=re.IGNORECASE)):
+                        if len(txt) <= len('keyword') + 10:
+                            found_keyword = True
+                            continue
+                        keywords = txt
+                        break
+        metadata[pdf]['keywords'] = keywords
+
+        abstract = ''
+        if 'abstract' in data:
+            abstract = data['abstract']
+        else:
+            found_abstract = False
+            for txt in text_list:
+                if found_abstract:
+                    abstract = txt
+                    break
+                if bool(re.search('abstract', txt, flags=re.IGNORECASE)):
+                    if len(txt) <= len('abstract') + 10:
+                        found_abstract = True
+                        continue
+                    abstract = txt
+                    break
+        metadata[pdf]['abstract'] = abstract
+    except:
+        del metadata[pdf]
+        force = True
+    
+    return metadata, force
+
+
 def generate_metadata_individual(metadata: dict, pdf: str):
     force = False
 
@@ -61,25 +126,8 @@ def generate_metadata_individual(metadata: dict, pdf: str):
     if not data:
         force = True
         return metadata, force
-    
-    for key in ('title', 'author', 'categories', 'issued', 'publisher', 'abstract', 'DOI'):
-        if key not in data:
-            force = True
-            continue
 
-    metadata[pdf] = {}
-
-    try:
-        metadata[pdf]['title'] = data['title']
-        metadata[pdf]['author'] = get_author(data['author'])
-        metadata[pdf]['keywords'] = ','.join(data['categories'])
-        metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
-        metadata[pdf]['publisher'] = data['publisher']
-        metadata[pdf]['abstract'] = data['abstract']
-        metadata[pdf]['doi'] = data['DOI']
-    except:
-        del metadata[pdf]
-        force = True
+    metadata, force = generate(metadata, pdf, data)
 
     return metadata, force
 
@@ -119,26 +167,8 @@ def generate_metadata_doi(metadata: dict):
         if not data:
             force = True
             continue
-        
-        for key in ('title', 'author', 'categories', 'issued', 'publisher', 'abstract', 'DOI'):
-            if key not in data:
-                force = True
-                continue
 
-        metadata[pdf] = {}
-
-        try:
-            metadata[pdf]['title'] = data['title']
-            metadata[pdf]['author'] = get_author(data['author'])
-            metadata[pdf]['keywords'] = ','.join(data['categories'])
-            metadata[pdf]['date'] = str(data['issued']['date-parts'][0][0])
-            metadata[pdf]['publisher'] = data['publisher']
-            metadata[pdf]['abstract'] = data['abstract']
-            metadata[pdf]['doi'] = data['DOI']
-        except:
-            del metadata[pdf]
-            force = True
-            continue
+        metadata, force = generate(metadata, pdf, data)
     
     return metadata, force
 
@@ -161,8 +191,34 @@ def generate_metadata_manual(metadata: dict):
         title = text_list[idx]
         author = text_list[idx+1]
 
-        keyword, date = generate_metadata_ai(text_list)
+        keyword, date, doi = generate_metadata_ai(text_list)
         _title, _author, _date = generate_metadata_pdf(paper_dir, pdf)
+
+        _abstract = ''
+        found_abstract = False
+        for txt in text_list:
+            if found_abstract:
+                _abstract = txt
+                break
+            if bool(re.search('abstract', txt, flags=re.IGNORECASE)):
+                if len(txt) <= len('abstract') + 10:
+                    found_abstract = True
+                    continue
+                _abstract = txt
+                break
+        
+        if not keyword:
+            found_keyword = False
+            for txt in text_list:
+                if found_keyword:
+                    keyword = txt
+                    break
+                if bool(re.search('key.?word', txt, flags=re.IGNORECASE)):
+                    if len(txt) <= len('keyword') + 10:
+                        found_keyword = True
+                        continue
+                    keyword = txt
+                    break
 
         if not title and _title:
             title = _title
@@ -183,8 +239,8 @@ def generate_metadata_manual(metadata: dict):
         metadata[pdf]['keywords'] = keyword
 
         metadata[pdf]['publisher'] = ''
-        metadata[pdf]['abstract'] = ''
-        metadata[pdf]['doi'] = ''
+        metadata[pdf]['abstract'] = _abstract
+        metadata[pdf]['doi'] = doi
     
     return metadata
 
@@ -200,6 +256,9 @@ def generate_metadata_ai(text_list):
     question = "What is the date?"
     date = question_answerer(question=question, context=context, handle_impossible_answer=False)
 
+    question = "What is the doi?"
+    doi = question_answerer(question=question, context=context, handle_impossible_answer=True)
+
     for s in context[keyword['end']:]:
         if s == '.':
             break
@@ -212,7 +271,7 @@ def generate_metadata_ai(text_list):
     except ValueError:
         date['answer'] = date['answer'][-4:]
 
-    return keyword['answer'], date['answer']
+    return keyword['answer'], date['answer'], doi['answer']
 
 
 def generate_metadata_pdf(paper_dir: str, pdf: str):
@@ -235,14 +294,11 @@ def get_author(data: list):
 
 
 def get_idx(text_list):
-    val = bool(re.search(r'\d', text_list[0]))
-    if len(text_list[0]) < 15 and val:
-        return 1
-    if val:
+    if bool(re.search(r'\d', text_list[0])):
         question = "What is the date?"
         date = question_answerer(question=question, context=text_list[0], handle_impossible_answer=True)
-        
-        if date:
+
+        if date['answer'] and len(date['answer']) >= 4:
             return 1
     return 0
 
