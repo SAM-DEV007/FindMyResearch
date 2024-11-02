@@ -3,6 +3,7 @@ st.set_page_config(layout="wide")
 
 from pathlib import Path
 import os
+import webbrowser
 
 
 @st.cache_resource(show_spinner=False)
@@ -58,10 +59,16 @@ def search_load(text: str):
 
     return metadata, context, corpus, main_images
 
+
 def generate_results(search: list, metadata: dict):
+    paper_dir = str(Path(__file__).resolve().parent / 'Papers')
     for pdf in search:
         st.header(metadata[pdf]['title'])
         st.text(", ".join(metadata[pdf]["author"].split(",")))
+
+        if st.button('View PDF', key=pdf):
+            if os.path.exists(f'{paper_dir}/{pdf}'):
+                webbrowser.open(f'{paper_dir}/{pdf}', new=2)
 
         if metadata[pdf]['abstract']:
             with st.expander('Abstract'):
@@ -69,15 +76,17 @@ def generate_results(search: list, metadata: dict):
 
         with st.expander('Metadata'):
             st.write('')
-            st.write('File Name:')
-            st.write(f'**{pdf}**')
+            st.write('**FILE NAME**')
+            st.write(pdf)
+            st.write('**FILE LOCATION**')
+            st.write(f'{paper_dir}/{pdf}')
 
             for dat in metadata[pdf]:
                 st.write(f'**{dat.upper()}**')
                 if dat:
                     st.write(metadata[pdf][dat])
                     continue
-                
+
                 st.write('Not Available')
 
 
