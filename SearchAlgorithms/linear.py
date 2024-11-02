@@ -51,6 +51,14 @@ def generate_context():
         save_context(main_context)
 
 
+def text_search(context: dict):
+    return [pdf for pdf, content in context.items() if pdf_search(word, content)]
+
+
+def metadata_search_all(metadata: dict, word: str):
+    return [pdf for pdf, sub_metadata in metadata.items() if any(metadata_search(word, sub_metadata, main_word) for main_word in ('title', 'author', 'keywords', 'date', 'publisher', 'abstract', 'doi'))]
+
+
 def save_context(main_context):
     cache_dir = str(Path(__file__).resolve().parent.parent / '.cache/metadata_rp')
 
