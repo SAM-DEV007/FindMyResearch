@@ -42,7 +42,7 @@ search = st.text_input('Search')
 
 if search:
     cache_load.clear()
-    metadata, context, corpus, main_images = cache_load('Verifying Cache... Please wait...')
+    metadata, context, corpus, main_images = cache_load('Verifying Cache with PDFs... Please wait...')
 
     search = aisearch.semantic_search(corpus, search)
 st.write('Search Results:', search)
