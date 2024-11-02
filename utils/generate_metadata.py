@@ -235,7 +235,16 @@ def get_author(data: list):
 
 
 def get_idx(text_list):
-    return int(bool(re.search(r'\d', text_list[0])))
+    val = bool(re.search(r'\d', text_list[0]))
+    if len(text_list[0]) < 15 and val:
+        return 1
+    if val:
+        question = "What is the date?"
+        date = question_answerer(question=question, context=text_list[0], handle_impossible_answer=True)
+        
+        if date:
+            return 1
+    return 0
 
 
 def save_metadata(metadata: dict):
