@@ -39,23 +39,6 @@ def cache_load(text: str = 'Loading and Verifying Cache... Please wait...'):
     return metadata, context, corpus, main_images
 
 
-def generate_results(search: list, metadata: dict):
-    for pdf in search:
-        st.header(metadata[pdf]['title'])
-        with st.expander('File Details'):
-            st.write('')
-            st.write('File Name:')
-            st.write(f'**{pdf}**')
-        with st.expander('Metadata'):
-            st.write('')
-            for dat in metadata[pdf]:
-                st.write(f'**{dat.upper()}**')
-                if dat:
-                    st.write(metadata[pdf][dat])
-                    continue
-                st.write('Not Available')
-
-
 def search_load(text: str):
     with col_center:
         temp_info = st.info(text)
@@ -75,7 +58,24 @@ def search_load(text: str):
 
     return metadata, context, corpus, main_images
 
+def generate_results(search: list, metadata: dict):
+    for pdf in search:
+        st.header(metadata[pdf]['title'])
+        st.text(", ".join(metadata[pdf]["author"].split(",")))
+        with st.expander('File Details'):
+            st.write('')
+            st.write('File Name:')
+            st.write(f'**{pdf}**')
+        with st.expander('Metadata'):
+            st.write('')
+            for dat in metadata[pdf]:
+                st.write(f'**{dat.upper()}**')
+                if dat:
+                    st.write(metadata[pdf][dat])
+                    continue
+                st.write('Not Available')
 
+                
 if not st.session_state:
     cache_load.clear()
     st.session_state.sample = 0
