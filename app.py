@@ -79,7 +79,7 @@ def generate_results(search: list, metadata: dict):
             st.write('**FILE NAME**')
             st.write(pdf)
             st.write('**FILE LOCATION**')
-            st.write(f'{paper_dir}/{pdf}')
+            st.write(os.path.join(paper_dir, pdf))
 
             for dat in metadata[pdf]:
                 st.write(f'**{dat.upper()}**')
