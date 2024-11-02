@@ -39,6 +39,23 @@ def cache_load(text: str = 'Loading and Verifying Cache... Please wait...'):
     return metadata, context, corpus, main_images
 
 
+def generate_results(search: list, metadata: dict):
+    for pdf in search:
+        st.header(metadata[pdf]['title'])
+        with st.expander('File Details'):
+            st.write('')
+            st.write('File Name:')
+            st.write(f'**{pdf}**')
+        with st.expander('Metadata'):
+            st.write('')
+            for dat in metadata[pdf]:
+                st.write(f'**{dat.upper()}**')
+                if dat:
+                    st.write(metadata[pdf][dat])
+                    continue
+                st.write('Not Available')
+
+
 def search_load(text: str):
     with col_center:
         temp_info = st.info(text)
@@ -90,7 +107,7 @@ with col_left.container(height=400, border=False):
     with st.expander('Search Algorithm'):
         search_algorithm = st.selectbox(
             'Search Algorithm',
-            options=('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata')
+            options=('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata', 'File Name')
         )
 
     if 'semantic' not in search_algorithm.lower():
@@ -104,7 +121,7 @@ with col_left.container(height=400, border=False):
 
         sort_order = st.selectbox(
             'Sort Order',
-            ('Increase', 'Decrease')
+            ('Decrease', 'Increase')
         )
 
     sort_order = 0 if sort_order == 'Increase' else 1
@@ -118,8 +135,6 @@ with col_left.container(height=400, border=False):
                 total_results = len(corpus)
             case 'Semantic (Image)':
                 total_results = len(main_images)
-            case 'Metadata':
-                total_results = len(metadata)
         
         results_num = [f'All ({total_results})']
         for i in range(1, total_results - 10, 10):
@@ -173,6 +188,9 @@ if search:
         case 'Metadata':
             search = linear.metadata_search_all(metadata, search)
             normal = True
+        case 'File Name':
+            search = sort_filter.file_search(metadata, search)
+            normal = True
 
     if semantic:
         search = sort_filter.sort_relevance(search, sort_order)
@@ -182,5 +200,5 @@ if search:
     if filter_value:
         search = sort_filter.filter_search(search, metadata, filter_field.lower(), filter_value)
 
-with col_center.container(height=1000, border=False):
-    st.write(search)
+with col_center.container(height=700, border=False):
+    generate_results(search, metadata)
