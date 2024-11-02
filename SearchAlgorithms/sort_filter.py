@@ -11,5 +11,5 @@ def sort_relevance(results: dict, order: int): # order - 0: increase, 1: decreas
     return list(sorted(results, key=results.get, reverse=order))
 
 
-def filter_search(metadata: dict, field: str, value: str):
-    return [pdf for pdf in metadata if bool(re.search(value, metadata[pdf][field], flags=re.IGNORECASE))]
+def filter_search(results: list, metadata: dict, field: str, value: str):
+    return [pdf for pdf in results if bool(re.search(value, metadata[pdf][field], flags=re.IGNORECASE))]
