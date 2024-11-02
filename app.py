@@ -179,5 +179,8 @@ if search:
     if normal:
         search = sort_filter.sort_search(metadata, search, sort_field.lower(), sort_order)[:filter_results + 1]
 
+    if filter_value:
+        search = sort_filter.filter_search(search, metadata, filter_field.lower(), filter_value)
+
 with col_center.container(height=1000, border=False):
     st.write(search)
