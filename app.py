@@ -38,7 +38,12 @@ st.title('FindMyResearch')
 generate_metadata, aisearch, linear, sort_filter = model_load()
 metadata, context, corpus, main_images = cache_load()
 
-search = st.text_input('Search')
+search = st.text_input(
+    'Search',
+    placeholder='Enter search query...',
+    max_chars=100,
+    autocomplete='off'
+)
 
 if search:
     cache_load.clear()
