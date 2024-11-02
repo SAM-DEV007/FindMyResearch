@@ -181,7 +181,7 @@ with col_left.container(height=400, border=False):
     if files:
         for file in files:
             if file.type == 'application/pdf':
-                with open(rf'D:\Projects\Academic\FindMyResearch\FindMyResearch\Tests\{file.name}', 'wb') as f:
+                with open(f'{paper_dir}/{file.name}', 'wb') as f:
                     f.write(file.getvalue())
 
     st.write('')
