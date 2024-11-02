@@ -14,14 +14,13 @@ def model_load():
 
 
 @st.cache_resource(show_spinner=False)
-def cache_load():
-    temp_info = st.info('Loading and Verifying Cache... Please wait...')
+def cache_load(text: str = 'Loading and Verifying Cache... Please wait...'):
+    temp_info = st.info(text)
 
     generate_metadata.generate_metadata_main()
     linear.generate_context()
     aisearch.load_pdf()
     aisearch.load_images()
-
 
     metadata = generate_metadata.load_metadata()
     context = linear.load_context()
@@ -43,7 +42,7 @@ search = st.text_input('Search')
 
 if search:
     cache_load.clear()
-    cache_load()
+    metadata, context, corpus, main_images = cache_load('Verifying Cache... Please wait...')
 
     search = aisearch.semantic_search(corpus, search)
 st.write('Search Results:', search)
