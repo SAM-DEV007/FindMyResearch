@@ -171,6 +171,9 @@ def generate_metadata_manual(metadata: dict):
         if (not date or len(date) == 4) and _date:
             date = _date
         
+        if not title and not _title:
+            title = keyword
+        
         metadata[pdf] = {}
             
         metadata[pdf]['title'] = title
@@ -216,6 +219,10 @@ def generate_metadata_pdf(paper_dir: str, pdf: str):
     reader = PdfReader(f'{paper_dir}/{pdf}')
     metadata = reader.metadata
     date = metadata.creation_date
+
+    if metadata.author:
+        if metadata.author.isnumeric():
+            metadata.author = ''
 
     if isinstance(date, datetime):
         date = metadata.creation_date.strftime('%d-%m-%Y')
