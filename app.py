@@ -75,7 +75,7 @@ def generate_results(search: list, metadata: dict):
                     continue
                 st.write('Not Available')
 
-                
+
 if not st.session_state:
     cache_load.clear()
     st.session_state.sample = 0
@@ -92,7 +92,7 @@ with col_center:
     search = st.text_input(
         'Search',
         placeholder='Enter search query...',
-        max_chars=100,
+        max_chars=200,
         autocomplete='off'
     )
 
