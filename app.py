@@ -1,6 +1,9 @@
 import streamlit as st
 st.set_page_config(layout="wide")
 
+from pathlib import Path
+import os
+
 
 @st.cache_resource(show_spinner=False)
 def model_load():
@@ -80,49 +83,86 @@ with col_center:
     
     st.divider()
 
-with col_left:
+with col_left.container(height=400, border=False):
     options = ('Relevance', 'Title', 'Author', 'Keywords', 'Date', 'Publisher', 'Abstract', 'Doi')
     hide_option = False
 
-    search_algorithm = st.selectbox(
-        'Search Algorithm',
-        ('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata')
-    )
+    with st.expander('Search Algorithm'):
+        search_algorithm = st.selectbox(
+            'Search Algorithm',
+            options=('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata')
+        )
 
     if 'semantic' not in search_algorithm.lower():
         hide_option = True
 
-    st.divider()
+    with st.expander('Sort'):
+        sort_field = st.selectbox(
+            'Sort Field',
+            options[1:] if hide_option else options
+        )
 
-    sort_field = st.selectbox(
-        'Sort Field',
-        options[1:] if hide_option else options
-    )
+        sort_order = st.selectbox(
+            'Sort Order',
+            ('Increase', 'Decrease')
+        )
 
-    sort_order = st.selectbox(
-        'Sort Order',
-        ('Increase', 'Decrease')
-    )
+    sort_order = 0 if sort_order == 'Increase' else 1
+
+    with st.expander('Filter'):
+        paper_dir = str(Path(__file__).resolve().parent / 'Papers')
+        total_results = len(os.listdir(paper_dir))
+        
+        match search_algorithm:
+            case 'Semantic (Text)':
+                total_results = len(corpus)
+            case 'Semantic (Image)':
+                total_results = len(main_images)
+            case 'Metadata':
+                total_results = len(metadata)
+        
+        results_num = [f'All ({total_results})']
+        for i in range(1, total_results - 10, 10):
+            results_num.append(min(i + 9, total_results))
+
+        filter_results = st.selectbox(
+            'Number of Results',
+            results_num
+        )
+
+        filter_field = st.selectbox(
+            'Filter Field',
+            options[1:]
+        )
+
+        filter_value = st.text_input(
+            'Filter',
+            placeholder='Enter filter text...',
+            max_chars=100,
+            autocomplete='off'
+        )
+
+        st.button('Filter')
     
     st.divider()
 
-    filter_field = st.selectbox(
-        'Filter Field',
-        options[1:]
-    )
-
-    filter_value = st.text_input(
-        'Filter',
-        placeholder='Enter filter text...',
-        max_chars=100,
-        autocomplete='off'
-    )
-
-    st.button('Filter')
+    st.button('Upload')
 
 if search:
     metadata, context, corpus, main_images = search_load('Verifying Cache with PDFs... Please wait...')
-    search = aisearch.semantic_search(corpus, search)
+
+    match search_algorithm:
+        case 'Semantic (Text)':
+            search = aisearch.semantic_search(corpus, search)
+        case 'Semantic (Image)':
+            search = aisearch.semantic_image(main_images, search)
+        case 'Text':
+            search = linear.text_search(search, context)
+        case 'Metadata':
+            search = linear.metadata_search(search, metadata)
 
 with col_center:
-    st.write('Search Results:', search)
+    st.write('Search Results:')
+
+with col_center.container(height=1000, border=False):
+    st.write(search)
