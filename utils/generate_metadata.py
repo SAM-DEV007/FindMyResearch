@@ -57,59 +57,76 @@ def generate(metadata: dict, pdf: str, data: dict):
         metadata[pdf]['title'] = data['title']
         metadata[pdf]['author'] = get_author(data['author'])
         metadata[pdf]['publisher'] = data['publisher']
-        metadata[pdf]['doi'] = data['DOI']
 
         _, _, date = generate_metadata_pdf(paper_dir, pdf)
         if not date:
             date = str(data['issued']['date-parts'][0][0])
         metadata[pdf]['date'] = date
 
-        doc = fitz.open(f'{paper_dir}/{pdf}')
-        page = doc[0]
-        blocks = page.get_text("blocks")
-
-        text_list = [block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', ' ') for block in blocks]
-
         keywords = ''
+        doi = ''
+        abstract = ''
+
+        if 'DOI' not in data or 'categories' not in data or 'abstract' not in data:
+            doc = fitz.open(f'{paper_dir}/{pdf}')
+            page = doc[0]
+            blocks = page.get_text("blocks")
+
+            text_list = [block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', ' ') for block in blocks]
+
+            keywords, _, doi = generate_metadata_ai(text_list)
+            keyword, abstract = generate_keyabs(text_list, keywords)
+
+        if 'DOI' in data:
+            doi = data['DOI']
+        metadata[pdf]['doi'] = doi
+
         if 'categories' in data:
             keywords = ','.join(data['categories'])
-        else:
-            keywords, _, _ = generate_metadata_ai(text_list)
-            if not keywords:
-                found_keyword = False
-                for txt in text_list:
-                    if found_keyword:
-                        keywords = txt
-                        break
-                    if bool(re.search('key.?word', txt, flags=re.IGNORECASE)):
-                        if len(txt) <= len('keyword') + 10:
-                            found_keyword = True
-                            continue
-                        keywords = txt
-                        break
         metadata[pdf]['keywords'] = keywords
 
-        abstract = ''
         if 'abstract' in data:
             abstract = data['abstract']
-        else:
-            found_abstract = False
-            for txt in text_list:
-                if found_abstract:
-                    abstract = txt
-                    break
-                if bool(re.search('abstract', txt, flags=re.IGNORECASE)):
-                    if len(txt) <= len('abstract') + 10:
-                        found_abstract = True
-                        continue
-                    abstract = txt
-                    break
         metadata[pdf]['abstract'] = abstract
     except:
         del metadata[pdf]
         force = True
     
     return metadata, force
+
+
+def generate_keyabs(text_list: list, keyword: str):
+    _abstract = ''
+    found_abstract = False
+
+    for txt in text_list:
+        if found_abstract:
+            _abstract = txt
+            break
+        if bool(re.search('abstract', txt, flags=re.IGNORECASE)):
+            if len(txt) <= len('abstract') + 10:
+                found_abstract = True
+                continue
+            _abstract = txt
+            break
+    if _abstract:
+        if 'introduction' in _abstract.lower():
+            _abstract = _abstract.split('introduction')[0]
+    
+    if not keyword:
+        found_keyword = False
+        for txt in text_list:
+            if found_keyword:
+                keyword = txt
+                break
+            if bool(re.search('key.?word', txt, flags=re.IGNORECASE)):
+                if len(txt) <= len('keyword') + 10:
+                    found_keyword = True
+                    continue
+                keyword = txt
+                break
+    
+    return keyword, _abstract
 
 
 def generate_metadata_individual(metadata: dict, pdf: str):
@@ -194,31 +211,7 @@ def generate_metadata_manual(metadata: dict):
         keyword, date, doi = generate_metadata_ai(text_list)
         _title, _author, _date = generate_metadata_pdf(paper_dir, pdf)
 
-        _abstract = ''
-        found_abstract = False
-        for txt in text_list:
-            if found_abstract:
-                _abstract = txt
-                break
-            if bool(re.search('abstract', txt, flags=re.IGNORECASE)):
-                if len(txt) <= len('abstract') + 10:
-                    found_abstract = True
-                    continue
-                _abstract = txt
-                break
-        
-        if not keyword:
-            found_keyword = False
-            for txt in text_list:
-                if found_keyword:
-                    keyword = txt
-                    break
-                if bool(re.search('key.?word', txt, flags=re.IGNORECASE)):
-                    if len(txt) <= len('keyword') + 10:
-                        found_keyword = True
-                        continue
-                    keyword = txt
-                    break
+        keyword, _abstract = generate_keyabs(text_list, keyword)
 
         if not title and _title:
             title = _title
@@ -294,13 +287,7 @@ def get_author(data: list):
 
 
 def get_idx(text_list):
-    if bool(re.search(r'\d', text_list[0])):
-        question = "What is the date?"
-        date = question_answerer(question=question, context=text_list[0], handle_impossible_answer=True)
-
-        if date['answer'] and len(date['answer']) >= 4:
-            return 1
-    return 0
+    return bool(re.search(r'\d\d\d\d', text_list[0]))
 
 
 def save_metadata(metadata: dict):
