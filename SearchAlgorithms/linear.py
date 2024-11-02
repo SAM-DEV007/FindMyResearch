@@ -51,7 +51,7 @@ def generate_context():
         save_context(main_context)
 
 
-def text_search(context: dict):
+def text_search(context: dict, word: str):
     return [pdf for pdf, content in context.items() if pdf_search(word, content)]
 
 
