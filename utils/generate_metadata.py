@@ -75,7 +75,7 @@ def generate(metadata: dict, pdf: str, data: dict):
             text_list = [block[4].encode('ascii', 'ignore').strip().decode('utf-8').replace('\n', ' ') for block in blocks]
 
             keywords, _, doi = generate_metadata_ai(text_list)
-            keyword, abstract = generate_keyabs(text_list, keywords)
+            keywords, abstract = generate_keyabs(text_list, keywords)
 
         if 'DOI' in data:
             doi = data['DOI']
