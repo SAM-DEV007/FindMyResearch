@@ -62,17 +62,22 @@ def generate_results(search: list, metadata: dict):
     for pdf in search:
         st.header(metadata[pdf]['title'])
         st.text(", ".join(metadata[pdf]["author"].split(",")))
-        with st.expander('File Details'):
+
+        if metadata[pdf]['abstract']:
+            with st.expander('Abstract'):
+                st.write(metadata[pdf]['abstract'])
+
+        with st.expander('Metadata'):
             st.write('')
             st.write('File Name:')
             st.write(f'**{pdf}**')
-        with st.expander('Metadata'):
-            st.write('')
+
             for dat in metadata[pdf]:
                 st.write(f'**{dat.upper()}**')
                 if dat:
                     st.write(metadata[pdf][dat])
                     continue
+                
                 st.write('Not Available')
 
 
