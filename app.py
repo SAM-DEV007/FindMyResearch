@@ -126,9 +126,13 @@ with col_left.container(height=400, border=False):
             results_num.append(min(i + 9, total_results))
 
         filter_results = st.selectbox(
-            'Number of Results',
+            'Max. Number of Results',
             results_num
         )
+        if isinstance(filter_results, str) and 'All' in filter_results:
+            filter_results = total_results
+        
+        st.divider()
 
         filter_field = st.selectbox(
             'Filter Field',
@@ -154,16 +158,26 @@ with col_center:
 
 if search:
     metadata, context, corpus, main_images = search_load('Verifying Cache with PDFs... Please wait...')
+    semantic, normal = False, False
 
     match search_algorithm:
         case 'Semantic (Text)':
-            search = aisearch.semantic_search(corpus, search)
+            search = aisearch.semantic_search(corpus, search, num_search=filter_results)
+            semantic = True
         case 'Semantic (Image)':
-            search = aisearch.image_semantic_search(main_images, search)
+            search = aisearch.image_semantic_search(main_images, search, num_search=filter_results)
+            semantic = True
         case 'Text':
-            search = linear.text_search(search, context)
+            search = linear.text_search(context, search)
+            normal = True
         case 'Metadata':
-            search = linear.metadata_search(search, metadata)
+            search = linear.metadata_search_all(metadata, search)
+            normal = True
+
+    if semantic:
+        search = sort_filter.sort_relevance(search, sort_order)
+    if normal:
+        search = sort_filter.sort_search(metadata, search, sort_field.lower(), sort_order)[:filter_results + 1]
 
 with col_center.container(height=1000, border=False):
     st.write(search)
