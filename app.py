@@ -177,9 +177,15 @@ with col_left.container(height=400, border=False):
 
         st.button('Filter')
     
-    st.divider()
+    #st.divider()
 
-    st.button('Upload')
+    files = st.file_uploader('Research Paper', type=('pdf'), accept_multiple_files=True)
+    if files:
+        for file in files:
+            if file.type == 'application/pdf':
+                with open(rf'D:\Projects\Academic\FindMyResearch\FindMyResearch\Tests\{file.name}', 'wb') as f:
+                    f.write(file.getvalue())
+        st.rerun()
     st.write('')
 
 with col_center:
