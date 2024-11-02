@@ -147,6 +147,10 @@ with col_left.container(height=400, border=False):
     st.divider()
 
     st.button('Upload')
+    st.write('')
+
+with col_center:
+    st.write('Search Results:')
 
 if search:
     metadata, context, corpus, main_images = search_load('Verifying Cache with PDFs... Please wait...')
@@ -155,14 +159,11 @@ if search:
         case 'Semantic (Text)':
             search = aisearch.semantic_search(corpus, search)
         case 'Semantic (Image)':
-            search = aisearch.semantic_image(main_images, search)
+            search = aisearch.image_semantic_search(main_images, search)
         case 'Text':
             search = linear.text_search(search, context)
         case 'Metadata':
             search = linear.metadata_search(search, metadata)
-
-with col_center:
-    st.write('Search Results:')
 
 with col_center.container(height=1000, border=False):
     st.write(search)
