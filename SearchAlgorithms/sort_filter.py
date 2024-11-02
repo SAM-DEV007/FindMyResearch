@@ -13,3 +13,7 @@ def sort_relevance(results: dict, order: int): # order - 0: increase, 1: decreas
 
 def filter_search(results: list, metadata: dict, field: str, value: str):
     return [pdf for pdf in results if bool(re.search(value, metadata[pdf][field], flags=re.IGNORECASE))]
+
+
+def file_search(metadata: dict, value: str):
+    return [pdf for pdf in metadata if bool(re.search(value, metadata[pdf]['title'], flags=re.IGNORECASE))]
