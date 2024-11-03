@@ -118,7 +118,8 @@ with col_left.container(height=400, border=True):
     with st.expander('Search Algorithm'):
         search_algorithm = st.selectbox(
             'Search Algorithm',
-            options=('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata', 'File Name')
+            options=('Semantic (Text)', 'Semantic (Image)', 'Text', 'Metadata', 'File Name'),
+            label_visibility='collapsed'
         )
 
     if 'semantic' not in search_algorithm.lower():
