@@ -163,8 +163,8 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
 
     Special Cases:
     
-    Field - Author: It is sorted alphabetically with the first author's name.
-    Field - Date: It is sorted according to the date published.
+    - Field - Author: It is sorted alphabetically with the first author's name.
+    - Field - Date: It is sorted according to the date published.
 
     Any other fields from the above are sorted alphabetically with the whole field details in the metadata of the papers.
     
