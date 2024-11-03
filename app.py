@@ -82,12 +82,9 @@ def generate_results(search: list, metadata: dict):
             st.write(os.path.join(paper_dir, pdf))
 
             for dat in metadata[pdf]:
-                st.write(f'**{dat.upper()}**')
-                if dat:
+                if dat and metadata[pdf][dat]:
+                    st.write(f'**{dat.upper()}**')    
                     st.write(metadata[pdf][dat])
-                    continue
-
-                st.write('Not Available')
 
 
 if not st.session_state:
