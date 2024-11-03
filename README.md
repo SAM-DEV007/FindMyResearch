@@ -44,6 +44,46 @@ More [information](#working) on how it works.
 - **Filter**: (Used with Filter Field) Filter on the basis of the text.
 
 ## Installation
+### Python version
+Python 3.x or greater is required.
+
+### Clone the repository
+```bash
+git clone https://github.com/SAM-DEV007/FindMyResearch.git
+cd FindMyResearch
+```
+
+### Create a virtual environment
+```bash
+pip install virtualenv
+python -m venv .venv
+```
+
+### Activate virtual environment
+#### Windows
+```bash
+./venv/Scripts/activate
+```
+#### Linux/Mac
+```bash
+source venv/bin/activate
+```
+
+### Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Run Application
+Make sure `Papers` directory (`FindMyResearch\Papers`) is created and have research papers in it. The directory should look like [this](#directory).\
+If you want to download the research papers (`Papers` directory is automatically created).
+```bash
+python download_rp.py
+```
+Run the streamlit application:
+```bash
+streamlit run app.py
+```
 
 ## Directory
 
