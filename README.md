@@ -75,7 +75,8 @@ pip install -r requirements.txt
 ```
 
 ### Run Application
-Make sure `Papers` directory (`FindMyResearch\Papers`) is created and have research papers in it. The directory should look like [this](#directory).\
+Make sure `Papers` directory (`FindMyResearch\Papers`) is created and have research papers in it. The directory should look like [this](#directory).
+
 If you want to download the research papers (`Papers` directory is automatically created).
 ```bash
 python download_rp.py
