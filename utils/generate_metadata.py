@@ -287,7 +287,7 @@ def get_author(data: list):
 
 
 def get_idx(text_list):
-    return bool(re.search(r'\d\d\d\d', text_list[0]))
+    return int(bool(re.search(r'\d\d\d\d', text_list[0])) or len(text_list[0]) < 10)
 
 
 def save_metadata(metadata: dict):
