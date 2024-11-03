@@ -86,8 +86,7 @@ streamlit run app.py
 ```
 
 ## Directory
-The directory should look like this after the initial run.\
-Ignoring `.venv` files
+The directory should look like this after the initial run.
 
 ```
 FindMyResearch
