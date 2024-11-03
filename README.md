@@ -120,5 +120,12 @@ FindMyResearch
 ```
 
 ## Working
+The cache of all the PDFs of the research papers in `Papers` directory are made, and are checked and modified upon every search, sort and filter customization to overcome the discrepancy of unexpected file changes, addition or deletion.
+
+The cache consists of the corpus in text, corpus embeddings, image embeddings and the metadata extraction from the research papers.
+
+- Metadata generation
+- Search algorithms
+- Streamlit application
 
 ## Video Demo
