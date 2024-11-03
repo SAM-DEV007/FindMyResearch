@@ -171,10 +171,5 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
   - Filter
 
     The search results are filtered depending on the text entered in the Filter area and the Filter field. The filters are applied to the metadata of the results and then displayed.
-  
-- Streamlit application\
-  [Source code](app.py)
-
-  
 
 ## Video Demo
