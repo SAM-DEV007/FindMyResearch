@@ -6,7 +6,7 @@ Search for a paper using word, phrase, sentence or a question.
 
 **Search algorithms**:
 
-The search algorithms are robust and can be used with any research paper. More [info](#working) on its working.
+The search algorithms are robust and can be used with any research paper. More [information](#working) on how it works.
 - Semantic (Text): Semantic search to find the most possible match among the corpus of the papers.
 - Semantic (Image): Semantic search to find the most possible match among the images of the papers.
 - Text: Word, Phrase or Sentence match among the corpus of the papers.
@@ -15,7 +15,7 @@ The search algorithms are robust and can be used with any research paper. More [
 
 **Sort**:
 
-More [info](#working) on its working.
+More [information](#working) on how it works.
 - **Sort Field**
    - Relevance: (Only available in Semantic search) Sort on the basis of relevance with the search.
    - Title: Sort on the basis of title.
@@ -31,7 +31,7 @@ More [info](#working) on its working.
 
 **Filter**:
 
-More [info](#working) on its working.
+More [information](#working) on how it works.
 - **Max. Number of Results**: The maximum number of results to be considered.
 - **Filter Field** (Used with Filter, if the Filter is empty, it is ignored)
   - Title: Filter on the basis of title.
