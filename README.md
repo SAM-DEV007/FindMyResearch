@@ -174,3 +174,10 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
 
 ## Video Demo
 The application has the ability to handle huge amount of files. In this demo, 500 research papers are used.
+
+https://github.com/user-attachments/assets/7f45182a-fc48-42e6-bcda-3615be300637
+
+**Timestamps**:\
+00:00 - 04:40: Searching and Operations on Research Papers\
+04:41 - 07:47: Sort and Filter\
+07:47 - 10:13: Upload new Paper and its Operations
