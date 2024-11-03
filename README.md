@@ -139,7 +139,17 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
     The metadata is extracted from the first page of the paper and the actual metadata of the PDF. The Title, Authors, Keywords and Date issued is extracted from the metadata of the PDF. If some of them are not      found, `Roberta Base Squad2` huggingface model is used to extract the Keywords, Date issued and DOI from the paper. Additionally, the Keywords (if not found in previous steps) and Abstract are extracted from     the first page of the PDF.
   
 - Search algorithms\
-   Source code: [Semantic - Text & Image](SearchAlgorithms/aisearch.py) and [Text & Metadata](SearchAlgorithms/linear.py)
+  Source code: [Semantic - Text & Image](SearchAlgorithms/aisearch.py) and [Text & Metadata](SearchAlgorithms/linear.py)
+
+  - Semantic (Text and Image)
+
+    The text (corpus) and images of the papers are converted to embeddings and are matched semantically with the embeddings of the query. The result is in the form of the semantically matched results along with      the score (between 0 to 1) for relevance with the query. The huggingface models, `MiniLLM` for semantic text and `OpenAI CLIP` for semantic image, are used.
+  - Text
+
+    The corpus of the papers are matched with the query to get the results.
+  - Metadata
+
+    The metadata of the papers are matched with the query to ge the results. It matches the query with every metadata field of the papers.
   
 - Sort and Filter\
   [Source code](SearchAlgorithms/sort_filter.py)
