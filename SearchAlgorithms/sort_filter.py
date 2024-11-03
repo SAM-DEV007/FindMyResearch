@@ -25,4 +25,4 @@ def filter_search(results: list, metadata: dict, field: str, value: str):
 
 
 def file_search(metadata: dict, value: str):
-    return [pdf for pdf in metadata if bool(re.search(value, pdf, flags=re.IGNORECASE))]
+    return [pdf for pdf in metadata if bool(re.search('.*'.join(value.split()), pdf, flags=re.IGNORECASE))]
