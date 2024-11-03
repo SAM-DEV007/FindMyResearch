@@ -114,7 +114,7 @@ with col_center:
     
     st.divider()
 
-with col_left.container(height=400, border=False):
+with col_left.container(height=400, border=True):
     options = ('Relevance', 'Title', 'Author', 'Keywords', 'Date', 'Publisher', 'Abstract', 'Doi')
     hide_option = False
 
@@ -196,10 +196,16 @@ if search:
     match search_algorithm:
         case 'Semantic (Text)':
             search = aisearch.semantic_search(corpus, search, num_search=filter_results)
-            semantic = True
+            if sort_field == 'Relevance':
+                semantic = True
+            else:
+                normal = True
         case 'Semantic (Image)':
             search = aisearch.image_semantic_search(main_images, search, num_search=filter_results)
-            semantic = True
+            if sort_field == 'Relevance':
+                semantic = True
+            else:
+                normal = True
         case 'Text':
             search = linear.text_search(context, search)
             normal = True
@@ -218,5 +224,22 @@ if search:
     if filter_value:
         search = sort_filter.filter_search(search, metadata, filter_field.lower(), filter_value)
 
-with col_center.container(height=700, border=False):
-    generate_results(search, metadata)
+with col_center:
+    num_pages = st.selectbox(
+        'Number of Results per Page',
+        [10, 20, 30, 40, 50]
+    )
+
+    pages = (len(search) // num_pages) + 1
+
+    page_holder = st.selectbox(
+        'Select Page',
+        [f'Page {i}' for i in range(1, pages + 1)]
+    )
+
+with col_center.container(height=700, border=True):
+    if page_holder:
+        current_page = int(page_holder[-1])
+        search = search[(current_page - 1) * num_pages:current_page * num_pages]
+
+        generate_results(search, metadata)
