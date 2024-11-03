@@ -163,18 +163,14 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
 
     Special Cases:
     
-    Field - Author: It is sorted alphabetically with the first author's name.
-    Field - Date: It is sorted according to the date published.
+    - Field - Author: It is sorted alphabetically with the first author's name.
+    - Field - Date: It is sorted according to the date published.
 
     Any other fields from the above are sorted alphabetically with the whole field details in the metadata of the papers.
     
   - Filter
 
     The search results are filtered depending on the text entered in the Filter area and the Filter field. The filters are applied to the metadata of the results and then displayed.
-  
-- Streamlit application\
-  [Source code](app.py)
-
-  
 
 ## Video Demo
+The application has the ability to handle huge amount of files. In this demo, 500 research papers are used.
