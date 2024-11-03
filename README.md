@@ -173,3 +173,4 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
     The search results are filtered depending on the text entered in the Filter area and the Filter field. The filters are applied to the metadata of the results and then displayed.
 
 ## Video Demo
+The application has the ability to handle huge amount of files. In this demo, 500 research papers are used.
