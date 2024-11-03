@@ -127,7 +127,8 @@ The cache of all the PDFs of the research papers in `Papers` directory are made,
 
 The cache consists of the corpus in text, corpus embeddings, image embeddings and the metadata extraction from the research papers. It ensures that these time taking processes are done only once when the files are added and use the cache to perform search operations swiftly. The cache is updated upon every search for the files added or removed. The cache updation process depends on the files added or removed as it does not modify the other files ensuring that the process takes minimal time.
 
-- Metadata generation
+- Metadata generation\
+  [Source code](utils/generate_metadata.py)
   
   The metadata extracted from the papers are the Title, Authors, Publisher, Date issued, Keywords, Abstract and DOI. The metadata is extracted by two methods:
   - DOI
@@ -137,7 +138,13 @@ The cache consists of the corpus in text, corpus embeddings, image embeddings an
     
     The metadata is extracted from the first page of the paper and the actual metadata of the PDF. The Title, Authors, Keywords and Date issued is extracted from the metadata of the PDF. If some of them are not      found, `Roberta Base Squad2` huggingface model is used to extract the Keywords, Date issued and DOI from the paper. Additionally, the Keywords (if not found in previous steps) and Abstract are extracted from     the first page of the PDF.
   
-- Search algorithms
-- Streamlit application
+- Search algorithms\
+   Source code: [Semantic - Text & Image](SearchAlgorithms/aisearch.py) and [Text & Metadata](SearchAlgorithms/linear.py)
+  
+- Sort and Filter\
+  [Source code](SearchAlgorithms/sort_filter.py)
+  
+- Streamlit application\
+  [Source code](app.py)
 
 ## Video Demo
