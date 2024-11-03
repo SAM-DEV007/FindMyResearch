@@ -1,9 +1,18 @@
 import re
+from datetime import datetime
 
 
 def sort_search(metadata: dict, results: list, field: str, order: int): # order - 0: increase, 1: decrease
     #title, author, keywords, date, publisher, abstract, doi
-    return list(sorted(results, key=lambda k: metadata[k][field], reverse=order))
+    match field:
+        case 'author':
+            sort = list(sorted(results, key=lambda k: metadata[k][field].split(',')[0], reverse=order))
+        case 'date':
+            sort = list(sorted(results, key=lambda k: datetime.strptime(metadata[k][field], '%d-%m-%Y'), reverse=order))
+        case _:
+            sort = list(sorted(results, key=lambda k: metadata[k][field].lower(), reverse=order))
+
+    return sort
 
 
 def sort_relevance(results: dict, order: int): # order - 0: increase, 1: decrease
