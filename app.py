@@ -4,6 +4,7 @@ st.set_page_config(layout="wide")
 from pathlib import Path
 import os
 import webbrowser
+import math
 
 
 @st.cache_resource(show_spinner=False)
@@ -228,7 +229,7 @@ with col_center:
         [10, 20, 30, 40, 50]
     )
 
-    pages = (len(search) // num_pages) + 1
+    pages = math.ceil(len(search) / num_pages)
 
     page_holder = st.selectbox(
         'Select Page',
