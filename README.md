@@ -86,6 +86,39 @@ streamlit run app.py
 ```
 
 ## Directory
+The directory should look like this after the initial run.\
+Ignoring `.venv` files
+
+```
+FindMyResearch
++-- .venv
+|   +-- <.venv files> ...
++-- .cache
+|   +-- hub
+    |   +-- <hub files> ...
+|   +-- metadata_rp
+    |   +-- context.json
+    |   +-- metadata.json
+|   +-- semantic_rp
+    |   +-- semantic_image.dat
+    |   +-- semantic_sentence.dat
++-- Papers
+|   +-- <Papers files (.pdf)> ...
++-- SearchAlgorithms
+|   +-- aisearch.py
+|   +-- linear.py
+|   +-- sort_filter.py
++-- Tests
+|   +-- <Tests files> ...
++-- utils
+|   +-- download_paper.py
+|   +-- generate_metadata.py
++-- .gitignore
++-- app.py
++-- download_rp.py
++-- README.md
++-- requirements.txt
+```
 
 ## Working
 
