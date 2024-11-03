@@ -5,6 +5,7 @@ A Streamlit application to search, sort and filter research papers.\
 Search for a paper using word, phrase, sentence or a question.
 
 **Search algorithms**:
+The search algorithms are robust and can be used with any research paper. More [info](#working).
 - Semantic (Text): Semantic search to find the most possible match among the corpus of the papers.
 - Semantic (Image): Semantic search to find the most possible match among the images of the papers.
 - Text: Word, Phrase or Sentence match among the corpus of the papers.
