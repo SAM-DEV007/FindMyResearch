@@ -43,6 +43,8 @@ More [information](#working) on how it works.
   - Doi: Filter on the basis of DOI.
 - **Filter**: (Used with Filter Field) Filter on the basis of the text.
 
+The uploaded files from the Streamlit application are automatically saved in the `Papers` directory.
+
 ## Installation
 ### Python version
 Python 3.x or greater is required.
